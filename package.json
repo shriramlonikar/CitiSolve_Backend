@@ -1,0 +1,21 @@
+{
+  "name": "urban_chaupal_backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "express": "^5.1.0",
+    "fs": "^0.0.1-security",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.18.1",
+    "multer": "^2.0.2"
+  }
+}
