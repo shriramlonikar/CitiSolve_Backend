@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-const AdminSchema = new mongoose.Schema({
+const VendorSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
@@ -18,23 +18,23 @@ const AdminSchema = new mongoose.Schema({
   username: {
     type: String,
   },
-  role: { type: String, enum: ["user", "admin", "vendor"], default: "admin" },
+  role: { type: String, enum: ["user", "admin", "vendor"], default: "vendor" },
 });
 
-AdminSchema.statics.hashPassword = async function (password) {
+VendorSchema.statics.hashPassword = async function (password) {
   return await bcrypt.hash(password, 10);
 };
 
-AdminSchema.methods.isValidPassword = async function (password) {
+VendorSchema.methods.isValidPassword = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
-AdminSchema.methods.generateJWT = function () {
+VendorSchema.methods.generateJWT = function () {
   return jwt.sign({ email: this.email, id: this._id }, "nnanna", {
     expiresIn: "24h",
   });
 };
 
-const Admin = mongoose.model("admin", AdminSchema);
+const Vendor = mongoose.model("vendor", VendorSchema);
 
-export default Admin;
+export default Vendor;

@@ -1,25 +1,25 @@
 import { Router } from "express";
 import jwt from "jsonwebtoken"
-import User from "../model/user.model.js";
+import Vendor from "../model/vendor.model.js";
 
 const router = Router()
 
 router.post("/sign-up", async(req, res)=>{
     const{email, password, username} = req.body;
     try{
-        const existingUser = await User.findOne({email})
+        const existingUser = await Vendor.findOne({email})
         if(existingUser){
             return res.status(400).json({ message: "User already exists" });
         }
 
-        const hashedPassword = await User.hashPassword(password);
-        const newUser = await User.create({
+        const hashedPassword = await Vendor.hashPassword(password);
+        const newVendor = await Vendor.create({
         email,
         password: hashedPassword,
         username,
         });
 
-        const token = newUser.generateJWT();
+        const token = newVendor.generateJWT();
 
         res
            .cookie("token", token, {
@@ -27,7 +27,7 @@ router.post("/sign-up", async(req, res)=>{
             sameSite: "strict",
            })
            .status(201)
-           .json({ message: "User registered successfully" });
+           .json({ message: "Vendor registered successfully" });
     } catch(err){
         res.status(500).json({ message: "Error signing up", error: err.message });
     }
@@ -36,7 +36,7 @@ router.post("/sign-up", async(req, res)=>{
 router.post("/sign-in", async (req, res) => {
     const {password, email} = req.body;
     try {
-        const user = await User.findOne({ email }).select("+password");
+        const user = await Vendor.findOne({ email }).select("+password");
         if (!user) return res.status(404).json({message: "User not found"})
         
         const isValid = await user.isValidPassword(password)

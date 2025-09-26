@@ -18,7 +18,7 @@ const UserSchema = new mongoose.Schema({
   username: {
     type: String,
   },
-  role: { type: String, enum: ["user", "admin"], default: "user" },
+  role: { type: String, enum: ["user", "admin", "vendor"], default: "user" },
 });
 
 UserSchema.statics.hashPassword = async function (password) {

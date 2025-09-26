@@ -2,6 +2,7 @@ import { Router } from "express";
 import multer from "multer";
 import Request from "../model/request.model.js";
 import { authMiddleware } from "../middleware/auth.js";
+import User from "../model/user.model.js";
 
 const router = Router();
 
@@ -12,28 +13,27 @@ const upload = multer({ storage: multer.memoryStorage() });
 router.post(
   "/upload",
   authMiddleware("user"),
-  upload.single("image"),
+  upload.single("image"), // expects FormData with key "image"
   async (req, res) => {
     try {
+      console.log("req.body:", req.body);
+      console.log("req.file:", req.file);
+
       if (!req.file) {
-        return res.status(400).json({ error: "No file uploaded. Send form-data with key 'image'." });
+        return res
+          .status(400)
+          .json({ error: "No file uploaded. Send form-data with key 'image'." });
       }
 
       const newRequest = new Request({
         title: req.body.title,
         description: req.body.description,
         userImage: {
-          data: req.file.buffer,          // direct buffer, no fs
+          data: req.file.buffer, // ✅ buffer directly from memory
           contentType: req.file.mimetype,
         },
-        location: {
-          type: "Point",
-          coordinates: [
-            parseFloat(req.body.longitude),
-            parseFloat(req.body.latitude),
-          ],
-        },
         status: "pending",
+        userId: req.user._id,
       });
 
       await newRequest.save();
@@ -43,11 +43,43 @@ router.post(
         id: newRequest._id,
       });
     } catch (err) {
-      console.error(err);
+      console.error("Upload error:", err);
       res.status(500).json({ error: err.message });
     }
   }
 );
+
+
+// multer setup
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, "uploads/");
+//   },
+//   filename: (req, file, cb) => {
+//     cb(null, Date.now() + "-" + file.originalname);
+//   },
+// });
+// const upload = multer({ storage });
+
+// router.post(
+//   "/upload",
+//   authMiddleware("user"),
+//   upload.single("image"), // must match FormData field name
+//   (req, res) => {
+//     console.log("req.body:", req.body);
+//     console.log("req.file:", req.file);
+
+//     if (!req.file) {
+//       return res.status(400).json({ message: "File not uploaded" });
+//     }
+
+//     res.json({
+//       message: "Report uploaded successfully!",
+//       file: req.file,
+//       body: req.body,
+//     });
+//   }
+// );
 
 // POST /update/:id (Admin updates request)
 router.post(

@@ -22,21 +22,26 @@ const RequestSchema = new mongoose.Schema({
     enum: ["pending", "in-progress", "completed"],
     default: "pending"
   },
-  location: {
-    type: {
-      type: String,
-      enum: ["Point"],
-      default: "Point"
-    },
-    coordinates: {
-      type: [Number], // [longitude, latitude]
-      required: true
-    }
-  }
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",   // assuming you have a User model
+    required: true
+  },
+  // location: {
+  //   type: {
+  //     type: String,
+  //     enum: ["Point"],
+  //     default: "Point"
+  //   },
+  //   coordinates: {
+  //     type: [Number], // [longitude, latitude]
+  //     required: true
+  //   }
+  // }
 }, { timestamps: true });
 
 // Geospatial index for location queries
-RequestSchema.index({ location: "2dsphere" });
+// RequestSchema.index({ location: "2dsphere" });
 
 const Request = mongoose.model("Request", RequestSchema);
 
